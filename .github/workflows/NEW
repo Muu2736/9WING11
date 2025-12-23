@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>9WING DOWNLOAD CENTER</title>
+  <style>
+    @import url('fonts.googleapis.com');
+    
+    :root {
+      --primary-cyan: #00ffff;
+      --primary-purple: #8b5cf6;
+      --primary-blue: #0066ff;
+      --dark-bg: #0a0a0f;
+      --card-bg: rgba(15, 15, 25, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --border-glow: rgba(0, 255, 255, 0.3);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Orbitron', 'Prompt', sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 500px;
+      padding: 40px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      margin-bottom: 25px;
+      border: 3px solid var(--primary-cyan);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+      animation: logoFloat 4s ease-in-out infinite;
+      object-fit: cover;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+    }
+
+    .file-card {
+      background: var(--glass-bg);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      text-align: left;
+    }
+
+    .file-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.85em;
+    }
+
+    .label { color: var(--primary-cyan); font-weight: bold; letter-spacing: 1px; }
+    .value { color: var(--text-primary); }
+
+    /* Progress System */
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      margin: 25px 0;
+      display: none;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-cyan), var(--primary-blue));
+      box-shadow: 0 0 15px var(--primary-cyan);
+      transition: width 0.4s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 20px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(45deg, var(--primary-cyan), var(--primary-purple));
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      color: #0a0a0f;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+      filter: brightness(1.1);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    /* Dialog Pop-up */
+    #status-dialog {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .dialog-content {
+      padding: 40px;
+      background: var(--card-bg);
+      border: 2px solid var(--primary-cyan);
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+      animation: dialogAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes dialogAppear {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-icon {
+      font-size: 50px;
+      color: #00ff00;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Logo จากลิ้งก์ที่คุณให้มา -->
+    <img src="https://img5.pic.in.th/file/secure-sv1/1icon.th.jpeg" alt="9WING Logo" class="logo">
+    
+    <h1>UPDATE VERSION 6.6</h1>
+
+    <div class="file-card">
+        <div class="file-info-row">
+            <span class="label">FILE NAME:</span>
+            <span class="value" style="color: #00ff00;">NEW 9WING</span>
+        </div>
+        <div class="file-info-row">
+            <span class="label">VERSION:</span>
+			<span class="value" style="color: #00ff00;">NEW 6.6</span>
+       
+        </div>
+        <div class="file-info-row">
+            <span class="label">STATUS:</span>
+            <span class="value" style="color: #00ff00;">READY</span>
+        </div>
+    </div>
+             <span class="value" style="color: #FF0000;">❌ลค.ที่ใช้ตัว VERSION 7 ไม่ต้องโหลดนะครับ❌</span>
+    <div class="progress-container" id="progCont">
+        <div class="progress-bar" id="progBar"></div>
+    </div>
+
+    <button id="dlBtn" onclick="startDownload()">DOWNLOAD NOW</button>
+  </div>
+
+  <!-- Dialog เมื่อโหลดเสร็จ -->
+  <div id="status-dialog">
+    <div class="dialog-content">
+      <div class="success-icon">✓</div>
+      <h2 style="color: var(--primary-cyan); margin-bottom: 10px;">ดาวน์โหลดสำเร็จ</h2>
+      <p style="margin-bottom: 25px; line-height: 1.6;">อย่าลิมลบตัวเก่า ทิ้งด้วยนะครับกันระบบเกมมันรีเช็ค</p>
+      <button onclick="closeDialog()" style="padding: 12px 30px; width: auto; font-size: 0.8em;">ไปกันต่อ..</button>
+    </div>
+  </div>
+
+  <script>
+    const DOWNLOAD_URL = "https://github.com/Muu2736/9WING/raw/refs/heads/main/9WING.exe";
+
+    function startDownload() {
+      const btn = document.getElementById('dlBtn');
+      const progCont = document.getElementById('progCont');
+      const progBar = document.getElementById('progBar');
+      
+      btn.disabled = true;
+      progCont.style.display = 'block';
+
+      let width = 0;
+      const interval = setInterval(() => {
+        if (width >= 100) {
+          clearInterval(interval);
+          
+          // ดำเนินการดาวน์โหลดไฟล์จริง
+          const link = document.createElement('a');
+          link.href = DOWNLOAD_URL;
+          link.setAttribute('download', '9WING.exe');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          // แสดง Pop-up แจ้งเตือน
+          document.getElementById('status-dialog').style.display = 'flex';
+          btn.innerText = "TRANSFER COMPLETE";
+        } else {
+          // สุ่มเพิ่ม % เพื่อความสมจริงแบบไซไฟ
+          width += Math.random() * 12; 
+          if (width > 100) width = 100;
+          progBar.style.width = width + '%';
+          btn.innerText = "DOWNLOADING... " + Math.floor(width) + "%";
+        }
+      }, 350);
+    }
+
+    function closeDialog() {
+      document.getElementById('status-dialog').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
